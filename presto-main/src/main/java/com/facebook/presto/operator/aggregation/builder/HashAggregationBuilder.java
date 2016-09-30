@@ -11,21 +11,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.facebook.presto.operator.aggregation.builder;
 
-package com.facebook.presto.type;
+import com.facebook.presto.spi.Page;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Iterator;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-@Repeatable(Constraints.class)
-public @interface Constraint
+public interface HashAggregationBuilder
+        extends AutoCloseable
 {
-    String variable() default "";
+    void processPage(Page page);
 
-    String expression() default "";
+    Iterator<Page> buildResult();
+
+    boolean isFull();
+
+    @Override
+    void close();
 }
