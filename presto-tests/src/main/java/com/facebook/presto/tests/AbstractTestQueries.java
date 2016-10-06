@@ -3797,6 +3797,19 @@ public abstract class AbstractTestQueries
                 .build();
 
         assertEquals(actual, expected);
+
+        actual = computeActual("" +
+                "SELECT (MAX(x.a) OVER () - x.a) * 100.0 / MAX(x.a) OVER ()\n" +
+                "FROM (VALUES 1, 2, 3, 4) x(a)");
+
+        expected = resultBuilder(getSession(), DOUBLE)
+                .row(75.0)
+                .row(50.0)
+                .row(25.0)
+                .row(0.0)
+                .build();
+
+        assertEquals(actual, expected);
     }
 
     @Test
@@ -4493,6 +4506,9 @@ public abstract class AbstractTestQueries
 
         assertQuery("SELECT coalesce(try_cast('foo' AS BIGINT), 456) FROM orders", "SELECT 456 FROM orders");
         assertQuery("SELECT coalesce(try_cast(clerk AS BIGINT), 456) FROM orders", "SELECT 456 FROM orders");
+
+        assertQuery("SELECT CAST(x AS BIGINT) FROM (VALUES 1, 2, 3, NULL) t (x)", "VALUES 1, 2, 3, NULL");
+        assertQuery("SELECT try_cast(x AS BIGINT) FROM (VALUES 1, 2, 3, NULL) t (x)", "VALUES 1, 2, 3, NULL");
     }
 
     @Test
